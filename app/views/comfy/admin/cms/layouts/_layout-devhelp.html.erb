@@ -1,0 +1,46 @@
+<style>
+.modal-dialog.modal-dialog-scrollable.devmodal {
+  width: 90vw !important;
+  min-width: 90vw !important;
+  background-color: #0005;
+  color: green;
+}
+pre {
+    font-size: 87.5%;
+color: #e83e8c;
+white-space: pre
+}
+</style>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-outline-secondary mx-5" data-toggle="modal" data-target="#devlayoutModal">
+ Dev wiki
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="devlayoutModal" tabindex="-1" aria-labelledby="devlayoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable devmodal">
+    <div class="modal-content" style="background-color: inherit">
+      <div class="modal-header">
+        <h5 class="modal-title" id="devlayoutModalLabel">Referência</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+<%# @conf = File.read("#{Rails.root}/README.md")%>
+<%= content_for :devwiki do %>
+   <%#= cms_fragment_render(:devwiki, @conf) %>
+  <%= render plain: File.read("#{Rails.root}/README.md") %>
+ <%#= markdown @conf %>
+<% end %>
+<%= yield :devwiki %>
+        
+</div>
+     <div class="modal-footer">
+
+      </div>
+    </div>
+  </div>
+</div>
