@@ -6,6 +6,8 @@ class Comfy::Cms::Page < ActiveRecord::Base
 
   include Comfy::Cms::WithFragments
   include Comfy::Cms::WithCategories
+  include AlgoliaSearch
+  after_save :update_searchable_item
 
   cms_acts_as_tree counter_cache: :children_count, order: :position
   cms_has_revisions_for :fragments_attributes
@@ -103,6 +105,18 @@ class Comfy::Cms::Page < ActiveRecord::Base
     readonly!
 
     self
+  end
+  
+
+ def update_searchable_item
+    if site_id == 6
+      SearchableItem.find_or_initialize_by(origin_type: 'Page', origin_id: self.id).update(
+        title: self.label,
+        subtitle: self.slug,
+        group: 'Páginas',
+        url: self.full_path
+      )
+    end
   end
 
 protected
