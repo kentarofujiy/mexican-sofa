@@ -19,7 +19,7 @@ class ComfortableMexicanSofa::Content::Renderer
   class SyntaxError < StandardError; end
   class Error < StandardError; end
 
-  MAX_DEPTH = 100
+  MAX_DEPTH = 200
 
   # tags are in this format: {{ cms:tag_class params }}
   TAG_REGEX = %r{\{\{\s*?cms:(?<class>\w+)(?<params>.*?)\}\}}
