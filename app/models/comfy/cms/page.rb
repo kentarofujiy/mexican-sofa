@@ -116,7 +116,6 @@ class Comfy::Cms::Page < ActiveRecord::Base
         group: 'Páginas',
         url: self.full_path
       )
-    end
   elsif site_id == 8
     SearchableSotreq.find_or_initialize_by(origin_type: 'Page', origin_id: self.id).update(
       title: self.label,
