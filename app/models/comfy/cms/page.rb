@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Comfy::Cms::Page < ActiveRecord::Base
-
   self.table_name = "comfy_cms_pages"
 
   include Comfy::Cms::WithFragments
@@ -18,7 +17,7 @@ class Comfy::Cms::Page < ActiveRecord::Base
   belongs_to :site
   belongs_to :target_page,
     class_name: "Comfy::Cms::Page",
-    optional:   true
+    optional: true
 
   has_many :translations,
     dependent: :destroy
@@ -28,17 +27,17 @@ class Comfy::Cms::Page < ActiveRecord::Base
                     :assign_parent,
                     :escape_slug,
                     :assign_full_path
-  before_create     :assign_position
-  after_save        :sync_child_full_paths!
-  after_find        :unescape_slug_and_path
+  before_create :assign_position
+  after_save :sync_child_full_paths!
+  after_find :unescape_slug_and_path
 
   # -- Validations -------------------------------------------------------------
   validates :label,
-    presence:   true
+    presence: true
   validates :slug,
-    presence:   true,
+    presence: true,
     uniqueness: { scope: :parent_id },
-    unless:     ->(p) {
+    unless: ->(p) {
       p.site && (p.site.pages.count.zero? || p.site.pages.root == self)
     }
   validate :validate_target_page
@@ -56,7 +55,7 @@ class Comfy::Cms::Page < ActiveRecord::Base
       return if page.nil?
       return if exclude_self && page == current_page
 
-      options << ["#{'. . ' * depth}#{page.label}", page.id]
+      options << ["#{". . " * depth}#{page.label}", page.id]
 
       page.children.order(:position).each do |child_page|
         options_for_page.call(child_page, depth + 1)
@@ -94,8 +93,8 @@ class Comfy::Cms::Page < ActiveRecord::Base
     end
 
     translation = translations.published.find_by!(locale: I18n.locale)
-    self.layout        = translation.layout
-    self.label         = translation.label
+    self.layout = translation.layout
+    self.label = translation.label
     self.content_cache = translation.content_cache
 
     # We can't just assign fragments as it's a relation and will write to DB
@@ -106,26 +105,26 @@ class Comfy::Cms::Page < ActiveRecord::Base
 
     self
   end
-  
 
- def update_searchable_item
+  def update_searchable_item
     if site_id == 6
-      SearchableItem.find_or_initialize_by(origin_type: 'Page', origin_id: self.id).update(
+      SearchableItem.find_or_initialize_by(origin_type: "Page", origin_id: self.id).update(
         title: self.label,
         subtitle: self.slug,
-        group: 'Páginas',
-        url: self.full_path
+        group: "Páginas",
+        url: self.full_path,
       )
-  elsif site_id == 8
-    SearchableSotreq.find_or_initialize_by(origin_type: 'Page', origin_id: self.id).update(
-      title: self.label,
-      subtitle: self.slug,
-      group: 'Páginas',
-      url: self.full_path
-    )
+    elsif site_id == 8
+      SearchableSotreq.find_or_initialize_by(origin_type: "Page", origin_id: self.id).update(
+        title: self.label,
+        subtitle: self.slug,
+        group: "Páginas",
+        url: self.full_path,
+      )
+    end
   end
 
-protected
+  protected
 
   def assigns_label
     self.label = label.blank? ? slug.try(:titleize) : label
@@ -137,8 +136,7 @@ protected
   end
 
   def assign_full_path
-    self.full_path =
-      if self.parent
+    self.full_path = if self.parent
         [CGI.escape(self.parent.full_path).gsub("%2F", "/"), slug].join("/").squeeze("/")
       else
         "/"
@@ -183,8 +181,7 @@ protected
 
   # Unescape the slug and full path back into their original forms unless they're nonexistent
   def unescape_slug_and_path
-    self.slug       = CGI.unescape(slug)      unless slug.nil?
-    self.full_path  = CGI.unescape(full_path) unless full_path.nil?
+    self.slug = CGI.unescape(slug) unless slug.nil?
+    self.full_path = CGI.unescape(full_path) unless full_path.nil?
   end
-
 end
